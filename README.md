@@ -1,58 +1,103 @@
-<p align="center"><a href="https://laravel.com" target="_blank"><img src="https://raw.githubusercontent.com/laravel/art/master/logo-lockup/5%20SVG/2%20CMYK/1%20Full%20Color/laravel-logolockup-cmyk-red.svg" width="400" alt="Laravel Logo"></a></p>
+# Admin Panel - Sistem Microsite Restoran
 
-<p align="center">
-<a href="https://github.com/laravel/framework/actions"><img src="https://github.com/laravel/framework/workflows/tests/badge.svg" alt="Build Status"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/dt/laravel/framework" alt="Total Downloads"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/v/laravel/framework" alt="Latest Stable Version"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/l/laravel/framework" alt="License"></a>
-</p>
+Repository ini merupakan **Panel Admin Terpusat** untuk sistem microsite restoran multi-repository berbasis Laravel. Repo ini memegang seluruh **skema database (migrations)** dan **data awal (seeders)** yang digunakan bersama oleh **Microsite A (Kafe)** dan **Microsite B (Restoran Keluarga)**.
 
-## About Laravel
+---
 
-Laravel is a web application framework with expressive, elegant syntax. We believe development must be an enjoyable and creative experience to be truly fulfilling. Laravel takes the pain out of development by easing common tasks used in many web projects, such as:
+## 🛠️ Arsitektur Sistem
 
-- [Simple, fast routing engine](https://laravel.com/docs/routing).
-- [Powerful dependency injection container](https://laravel.com/docs/container).
-- Multiple back-ends for [session](https://laravel.com/docs/session) and [cache](https://laravel.com/docs/cache) storage.
-- Expressive, intuitive [database ORM](https://laravel.com/docs/eloquent).
-- Database agnostic [schema migrations](https://laravel.com/docs/migrations).
-- [Robust background job processing](https://laravel.com/docs/queues).
-- [Real-time event broadcasting](https://laravel.com/docs/broadcasting).
-
-Laravel is accessible, powerful, and provides tools required for large, robust applications.
-
-## Learning Laravel
-
-Laravel has the most extensive and thorough [documentation](https://laravel.com/docs) and video tutorial library of all modern web application frameworks, making it a breeze to get started with the framework.
-
-In addition, [Laracasts](https://laracasts.com) contains thousands of video tutorials on a range of topics including Laravel, modern PHP, unit testing, and JavaScript. Boost your skills by digging into our comprehensive video library.
-
-You can also watch bite-sized lessons with real-world projects on [Laravel Learn](https://laravel.com/learn), where you will be guided through building a Laravel application from scratch while learning PHP fundamentals.
-
-## Agentic Development
-
-Laravel's predictable structure and conventions make it ideal for AI coding agents like Claude Code, Cursor, and GitHub Copilot. Install [Laravel Boost](https://laravel.com/docs/ai) to supercharge your AI workflow:
-
-```bash
-composer require laravel/boost --dev
-
-php artisan boost:install
+```
+[Microsite A (Kafe)]      ── baca & tulis orders ──┐
+                                                  ▼
+                                          [ Database Bersama ] ◄── baca/tulis ── [Panel Admin]
+                                                  ▲
+[Microsite B (Restoran)]   ── hanya baca ─────────┘
 ```
 
-Boost provides your agent 15+ tools and skills that help agents build Laravel applications while following best practices.
+- **Nama Database Lokal Bersama**: `microsite_db`
+- **Versi Lingkungan**: PHP >= 8.3 & MySQL / MariaDB (Laragon / XAMPP)
 
-## Contributing
+---
 
-Thank you for considering contributing to the Laravel framework! The contribution guide can be found in the [Laravel documentation](https://laravel.com/docs/contributions).
+## 🚀 Panduan Setup Lokal (Untuk Angga & Naufal)
 
-## Code of Conduct
+Setiap anggota tim menjalankan database lokal masing-masing dengan nama dan skema yang sama melalui migration & seeder dari repo ini:
 
-In order to ensure that the Laravel community is welcoming to all, please review and abide by the [Code of Conduct](https://laravel.com/docs/contributions#code-of-conduct).
+### 1. Clone Repository & Install Dependency
+```bash
+git clone <url-repo-admin-panel>
+cd admin-panel
+composer install
+npm install && npm run build
+```
 
-## Security Vulnerabilities
+### 2. Konfigurasi Environment (`.env`)
+Salin file `.env.example`:
+```bash
+cp .env.example .env
+php artisan key:generate
+```
+Pastikan konfigurasi database di file `.env` mengarah ke database lokal Anda:
+```env
+DB_CONNECTION=mysql
+DB_HOST=127.0.0.1
+DB_PORT=3306
+DB_DATABASE=microsite_db
+DB_USERNAME=root
+DB_PASSWORD=
 
-If you discover a security vulnerability within Laravel, please send an e-mail to Taylor Otwell via [taylor@laravel.com](mailto:taylor@laravel.com). All security vulnerabilities will be promptly addressed.
+# Session cookie unik agar tidak saling menimpa session saat dijalankan di localhost bersamaan
+SESSION_COOKIE=admin_panel_session
+CACHE_PREFIX=admin_panel_cache
+```
 
-## License
+### 3. Buat Database & Jalankan Migration + Seeder
+Buat database bernama `microsite_db` di MySQL Anda (misal via HeidiSQL / phpMyAdmin), lalu jalankan:
+```bash
+php artisan migrate --seed
+php artisan storage:link
+```
 
-The Laravel framework is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
+### 4. Jalankan Aplikasi
+```bash
+php artisan serve
+```
+Akses di browser: `http://localhost:8000` (akan diarahkan ke `/admin/login`).
+
+---
+
+## 🔑 Akun Login Default (Dari Seeder)
+
+| Peran | Username | Password | Keterangan Akses |
+|---|---|---|---|
+| **Super Admin** | `superadmin` | `password123` | Mengelola semua microsite, akun admin, dan seluruh data |
+| **Admin Kafe** | `admin_kafe` | `password123` | Dashboard Kafe (`/admin/m/kafe`): Kategori, Menu, Pesanan |
+| **Admin Restoran** | `admin_restoran` | `password123` | Dashboard Restoran (`/admin/m/restoran`): Kategori, Menu |
+
+---
+
+## 📌 Catatan Integrasi untuk Microsite A & B
+
+1. **Akses Database**:
+   - Model di Microsite A dan Microsite B langsung mengarah ke tabel yang sudah dibuat oleh `admin-panel`.
+   - **Microsite B** hanya membaca data (SELECT).
+   - **Microsite A** membaca data serta menulis ke tabel `orders` dan `order_items`.
+2. **Identitas Microsite**:
+   - Di `.env` masing-masing microsite, tambahkan:
+     - Microsite A: `MICROSITE_SLUG=kafe`
+     - Microsite B: `MICROSITE_SLUG=restoran`
+3. **Session Cookie**:
+   - Microsite A: `SESSION_COOKIE=microsite_a_session`
+   - Microsite B: `SESSION_COOKIE=microsite_b_session`
+4. **Media / Gambar Menu**:
+   - File gambar menu diunggah ke `public/storage/menu/`.
+   - Microsite dapat menampilkan gambar melalui URL storage admin (misal: `http://localhost:8000/storage/...`).
+
+---
+
+## 🧪 Menjalankan Pengujian Otomatis (Tests)
+
+```bash
+php artisan test
+```
+Seluruh skenario isolasi data, otorisasi peran, scoping route model binding, dan manajemen pesanan dicakup dalam pengujian fitur.

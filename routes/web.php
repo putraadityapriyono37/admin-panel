@@ -6,6 +6,7 @@ use App\Http\Controllers\Admin\CategoryController;
 use App\Http\Controllers\Admin\DashboardController;
 use App\Http\Controllers\Admin\MenuItemController;
 use App\Http\Controllers\Admin\MicrositeController;
+use App\Http\Controllers\Admin\OrderController;
 use Illuminate\Support\Facades\Route;
 
 Route::redirect('/', '/admin/login');
@@ -38,6 +39,10 @@ Route::prefix('admin')->name('admin.')->group(function () {
                 Route::resource('menu-items', MenuItemController::class)
                     ->except('show')
                     ->parameters(['menu-items' => 'menuItem']);
+
+                Route::get('orders', [OrderController::class, 'index'])->name('orders.index');
+                Route::get('orders/{order}', [OrderController::class, 'show'])->name('orders.show');
+                Route::patch('orders/{order}/status', [OrderController::class, 'updateStatus'])->name('orders.status');
             });
     });
 });

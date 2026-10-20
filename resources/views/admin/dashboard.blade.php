@@ -8,5 +8,6 @@
     <ul>
         <li><a href="{{ route('admin.categories.index', $microsite) }}">Kelola kategori menu</a></li>
         <li><a href="{{ route('admin.menu-items.index', $microsite) }}">Kelola menu</a></li>
+        <li><a href="{{ route('admin.orders.index', $microsite) }}">Kelola pesanan</a></li>
     </ul>
 @endsection

@@ -6,6 +6,8 @@ use App\Models\Admin;
 use App\Models\Category;
 use App\Models\MenuItem;
 use App\Models\Microsite;
+use App\Models\Order;
+use App\Models\OrderItem;
 use Illuminate\Database\Seeder;
 
 class DatabaseSeeder extends Seeder
@@ -56,5 +58,47 @@ class DatabaseSeeder extends Seeder
         $paket = Category::create(['microsite_id' => $restoran->id, 'name' => 'Paket Keluarga', 'sort_order' => 2]);
         MenuItem::create(['microsite_id' => $restoran->id, 'category_id' => $utama->id, 'name' => 'Nasi Goreng Spesial', 'price' => 28000]);
         MenuItem::create(['microsite_id' => $restoran->id, 'category_id' => $paket->id, 'name' => 'Paket Keluarga 4 Orang', 'price' => 120000]);
+
+        $order1 = Order::create([
+            'microsite_id' => $kafe->id,
+            'order_code' => 'KAFE-001',
+            'customer_name' => 'Budi Santoso',
+            'table_number' => '3',
+            'notes' => 'Gula dipisah ya',
+            'status' => 'baru',
+            'total_price' => 33000,
+        ]);
+        OrderItem::create([
+            'order_id' => $order1->id,
+            'microsite_id' => $kafe->id,
+            'item_name' => 'Kopi Susu',
+            'unit_price' => 18000,
+            'quantity' => 1,
+        ]);
+        OrderItem::create([
+            'order_id' => $order1->id,
+            'microsite_id' => $kafe->id,
+            'item_name' => 'Kentang Goreng',
+            'unit_price' => 15000,
+            'quantity' => 1,
+        ]);
+
+        $order2 = Order::create([
+            'microsite_id' => $kafe->id,
+            'order_code' => 'KAFE-002',
+            'customer_name' => 'Siti Rahma',
+            'customer_phone' => '08123456789',
+            'table_number' => '5',
+            'notes' => '',
+            'status' => 'diproses',
+            'total_price' => 36000,
+        ]);
+        OrderItem::create([
+            'order_id' => $order2->id,
+            'microsite_id' => $kafe->id,
+            'item_name' => 'Kopi Susu',
+            'unit_price' => 18000,
+            'quantity' => 2,
+        ]);
     }
 }
