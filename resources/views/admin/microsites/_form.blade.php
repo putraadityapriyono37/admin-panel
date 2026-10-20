@@ -48,6 +48,19 @@
 </div>
 
 <div class="field">
+    <label>Deskripsi
+        <textarea name="description" rows="3" cols="40">{{ old('description', $settings['description'] ?? '') }}</textarea>
+    </label>
+</div>
+
+<div class="field">
+    <label>Media sosial
+        <input type="text" name="social_media" value="{{ old('social_media', $settings['social_media'] ?? '') }}"
+            maxlength="100" placeholder="@kafekita">
+    </label>
+</div>
+
+<div class="field">
     <input type="hidden" name="is_active" value="0">
     <label>
         <input type="checkbox" name="is_active" value="1" @checked(old('is_active', $microsite->is_active ?? true))>

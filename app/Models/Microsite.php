@@ -37,4 +37,14 @@ class Microsite extends Model
     {
         return $this->hasMany(Order::class);
     }
+
+    public function galleries(): HasMany
+    {
+        return $this->hasMany(Gallery::class);
+    }
+
+    public function promos(): HasMany
+    {
+        return $this->hasMany(Promo::class);
+    }
 }
