@@ -2,7 +2,9 @@
 
 use App\Http\Controllers\Admin\AdminAccountController;
 use App\Http\Controllers\Admin\AuthController;
+use App\Http\Controllers\Admin\CategoryController;
 use App\Http\Controllers\Admin\DashboardController;
+use App\Http\Controllers\Admin\MenuItemController;
 use App\Http\Controllers\Admin\MicrositeController;
 use Illuminate\Support\Facades\Route;
 
@@ -23,6 +25,19 @@ Route::prefix('admin')->name('admin.')->group(function () {
             Route::resource('admins', AdminAccountController::class)->except('show');
         });
 
-        Route::get('m/{microsite:slug}', [DashboardController::class, 'microsite'])->name('dashboard');
+        Route::prefix('m/{microsite:slug}')
+            ->middleware('microsite.access')
+            ->scopeBindings()
+            ->group(function () {
+                Route::get('/', [DashboardController::class, 'microsite'])->name('dashboard');
+
+                Route::resource('categories', CategoryController::class)->except('show');
+
+                Route::patch('menu-items/{menuItem}/toggle', [MenuItemController::class, 'toggle'])
+                    ->name('menu-items.toggle');
+                Route::resource('menu-items', MenuItemController::class)
+                    ->except('show')
+                    ->parameters(['menu-items' => 'menuItem']);
+            });
     });
 });

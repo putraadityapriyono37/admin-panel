@@ -1,18 +1,12 @@
-<!DOCTYPE html>
-<html lang="id">
+@extends('admin.layout')
 
-<head>
-    <meta charset="utf-8">
-    <title>Dashboard {{ $microsite->name }}</title>
-</head>
+@section('title', 'Dashboard ' . $microsite->name)
 
-<body>
+@section('content')
     <h1>Dashboard {{ $microsite->name }}</h1>
     <p>Halo, {{ auth('admin')->user()->name }}</p>
-    <form method="POST" action="{{ route('admin.logout') }}">
-        @csrf
-        <button type="submit">Keluar</button>
-    </form>
-</body>
-
-</html>
+    <ul>
+        <li><a href="{{ route('admin.categories.index', $microsite) }}">Kelola kategori menu</a></li>
+        <li><a href="{{ route('admin.menu-items.index', $microsite) }}">Kelola menu</a></li>
+    </ul>
+@endsection
