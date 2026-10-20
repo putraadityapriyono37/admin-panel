@@ -12,7 +12,14 @@ document.querySelectorAll('[data-toggle-password]').forEach(function (button) {
         button.setAttribute('aria-label', show ? 'Sembunyikan password' : 'Tampilkan password');
 
         button.querySelectorAll('[data-eye]').forEach(function (icon) {
-            icon.hidden = !icon.hasAttribute(show ? 'data-eye-open' : 'data-eye-closed');
+            var visible = icon.hasAttribute(show ? 'data-eye-open' : 'data-eye-closed');
+
+            // properti .hidden hanya ada di elemen HTML, SVG harus lewat atribut
+            if (visible) {
+                icon.removeAttribute('hidden');
+            } else {
+                icon.setAttribute('hidden', '');
+            }
         });
     });
 });
