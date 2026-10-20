@@ -17,6 +17,7 @@
             display: flex;
             gap: 16px;
             align-items: center;
+            flex-wrap: wrap;
             padding-bottom: 12px;
             border-bottom: 1px solid #ccc;
             margin-bottom: 16px;
@@ -36,6 +37,7 @@
             border: 1px solid #ccc;
             padding: 6px 8px;
             text-align: left;
+            vertical-align: middle;
         }
 
         .ok {
@@ -67,11 +69,21 @@
 <body>
     <nav>
         <strong>Panel Admin</strong>
+
         @if (auth('admin')->user()->isSuperAdmin())
             <a href="{{ route('admin.super.dashboard') }}">Dashboard</a>
             <a href="{{ route('admin.microsites.index') }}">Microsite</a>
             <a href="{{ route('admin.admins.index') }}">Akun Admin</a>
         @endif
+
+        @isset($currentMicrosite)
+            <span>|</span>
+            <strong>{{ $currentMicrosite->name }}</strong>
+            <a href="{{ route('admin.dashboard', $currentMicrosite) }}">Ringkasan</a>
+            <a href="{{ route('admin.categories.index', $currentMicrosite) }}">Kategori</a>
+            <a href="{{ route('admin.menu-items.index', $currentMicrosite) }}">Menu</a>
+        @endisset
+
         <form method="POST" action="{{ route('admin.logout') }}">
             @csrf
             <button type="submit">Keluar</button>

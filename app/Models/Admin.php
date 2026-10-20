@@ -34,4 +34,10 @@ class Admin extends Authenticatable
 
         return route('admin.dashboard', $this->microsites()->firstOrFail());
     }
+
+    public function canAccessMicrosite(int $micrositeId): bool
+    {
+        return $this->isSuperAdmin()
+            || $this->microsites()->whereKey($micrositeId)->exists();
+    }
 }
