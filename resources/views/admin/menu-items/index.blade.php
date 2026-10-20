@@ -15,7 +15,7 @@
                     <th>Foto</th>
                     <th>Nama</th>
                     <th>Kategori</th>
-                    <th>Harga</th>
+                    <th class="num">Harga</th>
                     <th>Status</th>
                     <th>Aksi</th>
                 </tr>
@@ -32,30 +32,32 @@
                         </td>
                         <td>{{ $item->name }}</td>
                         <td>{{ $item->category->name }}</td>
-                        <td>Rp {{ number_format($item->price, 0, ',', '.') }}</td>
+                        <td class="num">Rp {{ number_format($item->price, 0, ',', '.') }}</td>
                         <td>
                             <span class="badge {{ $item->is_available ? 'badge-ok' : 'badge-danger' }}">
                                 {{ $item->is_available ? 'Tersedia' : 'Habis' }}
                             </span>
                         </td>
                         <td>
-                            <a class="btn btn-secondary btn-sm" href="{{ route('admin.menu-items.edit', [$currentMicrosite, $item]) }}">Ubah</a>
+                            <div class="actions">
+                                <a class="btn btn-secondary btn-sm" href="{{ route('admin.menu-items.edit', [$currentMicrosite, $item]) }}">Ubah</a>
 
-                            <form class="inline" method="POST"
-                                action="{{ route('admin.menu-items.toggle', [$currentMicrosite, $item]) }}">
-                                @csrf
-                                @method('PATCH')
-                                <button class="btn btn-secondary btn-sm"
-                                    type="submit">{{ $item->is_available ? 'Tandai habis' : 'Tandai tersedia' }}</button>
-                            </form>
+                                <form class="inline" method="POST"
+                                    action="{{ route('admin.menu-items.toggle', [$currentMicrosite, $item]) }}">
+                                    @csrf
+                                    @method('PATCH')
+                                    <button class="btn btn-secondary btn-sm"
+                                        type="submit">{{ $item->is_available ? 'Tandai habis' : 'Tandai tersedia' }}</button>
+                                </form>
 
-                            <form class="inline" method="POST"
-                                action="{{ route('admin.menu-items.destroy', [$currentMicrosite, $item]) }}"
-                                onsubmit="return confirm('Hapus menu ini?')">
-                                @csrf
-                                @method('DELETE')
-                                <button class="btn btn-danger btn-sm" type="submit">Hapus</button>
-                            </form>
+                                <form class="inline" method="POST"
+                                    action="{{ route('admin.menu-items.destroy', [$currentMicrosite, $item]) }}"
+                                    onsubmit="return confirm('Hapus menu ini?')">
+                                    @csrf
+                                    @method('DELETE')
+                                    <button class="btn btn-danger btn-sm" type="submit">Hapus</button>
+                                </form>
+                            </div>
                         </td>
                     </tr>
                 @empty

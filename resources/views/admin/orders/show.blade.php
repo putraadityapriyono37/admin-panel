@@ -52,9 +52,9 @@
                 <tr>
                     <th>No</th>
                     <th>Menu</th>
-                    <th>Harga Satuan</th>
-                    <th>Jumlah</th>
-                    <th>Subtotal</th>
+                    <th class="num">Harga Satuan</th>
+                    <th class="num">Jumlah</th>
+                    <th class="num">Subtotal</th>
                 </tr>
             </thead>
             <tbody>
@@ -62,9 +62,9 @@
                     <tr>
                         <td>{{ $index + 1 }}</td>
                         <td>{{ $item->item_name }}</td>
-                        <td>Rp {{ number_format($item->unit_price, 0, ',', '.') }}</td>
-                        <td>{{ $item->quantity }}</td>
-                        <td>Rp {{ number_format($item->unit_price * $item->quantity, 0, ',', '.') }}</td>
+                        <td class="num">Rp {{ number_format($item->unit_price, 0, ',', '.') }}</td>
+                        <td class="num">{{ $item->quantity }}</td>
+                        <td class="num">Rp {{ number_format($item->unit_price * $item->quantity, 0, ',', '.') }}</td>
                     </tr>
                 @empty
                     <tr>
@@ -75,7 +75,7 @@
             <tfoot>
                 <tr>
                     <td colspan="4" class="tfoot-label">Total Pembayaran:</td>
-                    <td>Rp {{ number_format($order->total_price, 0, ',', '.') }}</td>
+                    <td class="num">Rp {{ number_format($order->total_price, 0, ',', '.') }}</td>
                 </tr>
             </tfoot>
         </table>

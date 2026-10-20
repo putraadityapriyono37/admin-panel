@@ -271,6 +271,46 @@ input[type="radio"] {
     margin-right: 8px;
 }
 
+/* Kolom password dengan tombol mata */
+.input-group {
+    position: relative;
+    display: flex;
+    max-width: 480px;
+}
+
+.input-group input {
+    max-width: none;
+    flex: 1;
+    padding-right: 48px;
+}
+
+.btn-eye {
+    position: absolute;
+    right: 4px;
+    top: 50%;
+    transform: translateY(-50%);
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 40px;
+    height: 40px;
+    padding: 0;
+    border: none;
+    border-radius: 4px;
+    background: none;
+    color: var(--muted);
+    cursor: pointer;
+}
+
+.btn-eye:hover {
+    color: var(--ink);
+}
+
+.btn-eye svg {
+    width: 20px;
+    height: 20px;
+}
+
 .field>label:has(input[type="checkbox"]),
 .field>label:has(input[type="radio"]),
 .check {
@@ -347,9 +387,29 @@ small,
     flex-wrap: wrap;
 }
 
+/* Tombol filter sejajar dengan bawah input, bukan tergeser margin field */
+.filter-form .field {
+    margin-bottom: 0;
+}
+
 .filter-form select,
 .filter-form input[type="date"] {
     max-width: 220px;
+}
+
+.actions {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    flex-wrap: wrap;
+}
+
+.num {
+    text-align: right;
+}
+
+tbody tr:hover {
+    background: #fbfaf9;
 }
 
 .page-head {
@@ -523,25 +583,29 @@ tfoot td {
     max-width: none;
 }
 
+.login-wrap .input-group {
+    max-width: none;
+}
+
 .login-wrap .btn {
     width: 100%;
 }
 
-/* --- Paginasi bawaan Laravel --- */
+/* --- Paginasi bawaan Laravel (hanya nav paginasi, bukan nav lain) --- */
 
-nav[aria-label] {
+nav[aria-label="Pagination Navigation"] {
     margin-top: 16px;
 }
 
-nav[aria-label] div {
+nav[aria-label="Pagination Navigation"] div {
     display: flex;
     flex-wrap: wrap;
     gap: 8px;
     align-items: center;
 }
 
-nav[aria-label] a,
-nav[aria-label] span {
+nav[aria-label="Pagination Navigation"] a,
+nav[aria-label="Pagination Navigation"] span {
     display: inline-flex;
     align-items: center;
     min-height: 36px;
@@ -552,7 +616,7 @@ nav[aria-label] span {
     text-decoration: none;
 }
 
-nav[aria-label] span[aria-current="page"] {
+nav[aria-label="Pagination Navigation"] span[aria-current="page"] {
     background: var(--ink);
     border-color: var(--ink);
     color: var(--surface);

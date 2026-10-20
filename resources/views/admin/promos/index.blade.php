@@ -33,14 +33,16 @@
                             @endif
                         </td>
                         <td>
-                            <a class="btn btn-secondary btn-sm" href="{{ route('admin.promos.edit', [$currentMicrosite, $promo]) }}">Ubah</a>
-                            <form class="inline" method="POST"
-                                action="{{ route('admin.promos.destroy', [$currentMicrosite, $promo]) }}"
-                                onsubmit="return confirm('Hapus promo ini?')">
-                                @csrf
-                                @method('DELETE')
-                                <button class="btn btn-danger btn-sm" type="submit">Hapus</button>
-                            </form>
+                            <div class="actions">
+                                <a class="btn btn-secondary btn-sm" href="{{ route('admin.promos.edit', [$currentMicrosite, $promo]) }}">Ubah</a>
+                                <form class="inline" method="POST"
+                                    action="{{ route('admin.promos.destroy', [$currentMicrosite, $promo]) }}"
+                                    onsubmit="return confirm('Hapus promo ini?')">
+                                    @csrf
+                                    @method('DELETE')
+                                    <button class="btn btn-danger btn-sm" type="submit">Hapus</button>
+                                </form>
+                            </div>
                         </td>
                     </tr>
                 @empty

@@ -25,14 +25,16 @@
                         <td>{{ $category->name }}</td>
                         <td>{{ $category->menu_items_count }}</td>
                         <td>
-                            <a class="btn btn-secondary btn-sm" href="{{ route('admin.categories.edit', [$currentMicrosite, $category]) }}">Ubah</a>
-                            <form class="inline" method="POST"
-                                action="{{ route('admin.categories.destroy', [$currentMicrosite, $category]) }}"
-                                onsubmit="return confirm('Hapus kategori ini?')">
-                                @csrf
-                                @method('DELETE')
-                                <button class="btn btn-danger btn-sm" type="submit">Hapus</button>
-                            </form>
+                            <div class="actions">
+                                <a class="btn btn-secondary btn-sm" href="{{ route('admin.categories.edit', [$currentMicrosite, $category]) }}">Ubah</a>
+                                <form class="inline" method="POST"
+                                    action="{{ route('admin.categories.destroy', [$currentMicrosite, $category]) }}"
+                                    onsubmit="return confirm('Hapus kategori ini?')">
+                                    @csrf
+                                    @method('DELETE')
+                                    <button class="btn btn-danger btn-sm" type="submit">Hapus</button>
+                                </form>
+                            </div>
                         </td>
                     </tr>
                 @empty

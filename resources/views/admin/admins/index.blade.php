@@ -31,13 +31,15 @@
                         </td>
                         <td>{{ $admin->isSuperAdmin() ? 'Semua' : $admin->microsites->pluck('name')->join(', ') }}</td>
                         <td>
-                            <a class="btn btn-secondary btn-sm" href="{{ route('admin.admins.edit', $admin) }}">Ubah</a>
-                            <form class="inline" method="POST" action="{{ route('admin.admins.destroy', $admin) }}"
-                                onsubmit="return confirm('Hapus akun ini?')">
-                                @csrf
-                                @method('DELETE')
-                                <button class="btn btn-danger btn-sm" type="submit">Hapus</button>
-                            </form>
+                            <div class="actions">
+                                <a class="btn btn-secondary btn-sm" href="{{ route('admin.admins.edit', $admin) }}">Ubah</a>
+                                <form class="inline" method="POST" action="{{ route('admin.admins.destroy', $admin) }}"
+                                    onsubmit="return confirm('Hapus akun ini?')">
+                                    @csrf
+                                    @method('DELETE')
+                                    <button class="btn btn-danger btn-sm" type="submit">Hapus</button>
+                                </form>
+                            </div>
                         </td>
                     </tr>
                 @empty

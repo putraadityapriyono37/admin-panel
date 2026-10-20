@@ -52,6 +52,7 @@ class AdminPagesSmokeTest extends TestCase
 
         $response->assertOk();
         $response->assertSee('Login Admin');
+        $response->assertSee('data-toggle-password', false);
     }
 
     /**

@@ -33,13 +33,15 @@
                         </td>
                         <td>{{ $microsite->admins_count }}</td>
                         <td>
-                            <a class="btn btn-secondary btn-sm" href="{{ route('admin.microsites.edit', $microsite) }}">Ubah</a>
-                            <form class="inline" method="POST" action="{{ route('admin.microsites.destroy', $microsite) }}"
-                                onsubmit="return confirm('Hapus microsite ini beserta seluruh datanya?')">
-                                @csrf
-                                @method('DELETE')
-                                <button class="btn btn-danger btn-sm" type="submit">Hapus</button>
-                            </form>
+                            <div class="actions">
+                                <a class="btn btn-secondary btn-sm" href="{{ route('admin.microsites.edit', $microsite) }}">Ubah</a>
+                                <form class="inline" method="POST" action="{{ route('admin.microsites.destroy', $microsite) }}"
+                                    onsubmit="return confirm('Hapus microsite ini beserta seluruh datanya?')">
+                                    @csrf
+                                    @method('DELETE')
+                                    <button class="btn btn-danger btn-sm" type="submit">Hapus</button>
+                                </form>
+                            </div>
                         </td>
                     </tr>
                 @empty

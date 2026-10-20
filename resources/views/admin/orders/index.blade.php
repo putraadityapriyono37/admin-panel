@@ -39,7 +39,7 @@
                     <th>Kode</th>
                     <th>Pelanggan</th>
                     <th>Meja / Telp</th>
-                    <th>Total</th>
+                    <th class="num">Total</th>
                     <th>Status</th>
                     <th>Aksi</th>
                 </tr>
@@ -59,7 +59,7 @@
                                 -
                             @endif
                         </td>
-                        <td>Rp {{ number_format($order->total_price, 0, ',', '.') }}</td>
+                        <td class="num">Rp {{ number_format($order->total_price, 0, ',', '.') }}</td>
                         <td>
                             @php($statusClass = ['baru' => 'badge-info', 'diproses' => 'badge-warn', 'siap' => 'badge-teal', 'selesai' => 'badge-ok', 'dibatalkan' => 'badge-danger'][$order->status] ?? 'badge-off')
                             <span class="badge {{ $statusClass }}">{{ ucfirst($order->status) }}</span>

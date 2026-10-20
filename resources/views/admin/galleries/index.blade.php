@@ -23,14 +23,16 @@
                         <td><img class="thumb" src="{{ asset('storage/' . $gallery->image) }}" alt="{{ $gallery->caption }}"></td>
                         <td>{{ $gallery->caption }}</td>
                         <td>
-                            <a class="btn btn-secondary btn-sm" href="{{ route('admin.galleries.edit', [$currentMicrosite, $gallery]) }}">Ubah</a>
-                            <form class="inline" method="POST"
-                                action="{{ route('admin.galleries.destroy', [$currentMicrosite, $gallery]) }}"
-                                onsubmit="return confirm('Hapus foto ini?')">
-                                @csrf
-                                @method('DELETE')
-                                <button class="btn btn-danger btn-sm" type="submit">Hapus</button>
-                            </form>
+                            <div class="actions">
+                                <a class="btn btn-secondary btn-sm" href="{{ route('admin.galleries.edit', [$currentMicrosite, $gallery]) }}">Ubah</a>
+                                <form class="inline" method="POST"
+                                    action="{{ route('admin.galleries.destroy', [$currentMicrosite, $gallery]) }}"
+                                    onsubmit="return confirm('Hapus foto ini?')">
+                                    @csrf
+                                    @method('DELETE')
+                                    <button class="btn btn-danger btn-sm" type="submit">Hapus</button>
+                                </form>
+                            </div>
                         </td>
                     </tr>
                 @empty
