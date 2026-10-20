@@ -4,9 +4,11 @@ use App\Http\Controllers\Admin\AdminAccountController;
 use App\Http\Controllers\Admin\AuthController;
 use App\Http\Controllers\Admin\CategoryController;
 use App\Http\Controllers\Admin\DashboardController;
+use App\Http\Controllers\Admin\GalleryController;
 use App\Http\Controllers\Admin\MenuItemController;
 use App\Http\Controllers\Admin\MicrositeController;
 use App\Http\Controllers\Admin\OrderController;
+use App\Http\Controllers\Admin\PromoController;
 use Illuminate\Support\Facades\Route;
 
 Route::redirect('/', '/admin/login');
@@ -32,7 +34,14 @@ Route::prefix('admin')->name('admin.')->group(function () {
             ->group(function () {
                 Route::get('/', [DashboardController::class, 'microsite'])->name('dashboard');
 
+                Route::get('info', [MicrositeController::class, 'editInfo'])->name('info.edit');
+                Route::patch('info', [MicrositeController::class, 'updateInfo'])->name('info.update');
+
                 Route::resource('categories', CategoryController::class)->except('show');
+
+                Route::resource('galleries', GalleryController::class)->except('show');
+
+                Route::resource('promos', PromoController::class)->except('show');
 
                 Route::patch('menu-items/{menuItem}/toggle', [MenuItemController::class, 'toggle'])
                     ->name('menu-items.toggle');

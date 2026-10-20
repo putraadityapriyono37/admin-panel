@@ -80,8 +80,11 @@
             <span>|</span>
             <strong>{{ $currentMicrosite->name }}</strong>
             <a href="{{ route('admin.dashboard', $currentMicrosite) }}">Ringkasan</a>
+            <a href="{{ route('admin.info.edit', $currentMicrosite) }}">Info Restoran</a>
             <a href="{{ route('admin.categories.index', $currentMicrosite) }}">Kategori</a>
             <a href="{{ route('admin.menu-items.index', $currentMicrosite) }}">Menu</a>
+            <a href="{{ route('admin.galleries.index', $currentMicrosite) }}">Galeri</a>
+            <a href="{{ route('admin.promos.index', $currentMicrosite) }}">Promo</a>
             <a href="{{ route('admin.orders.index', $currentMicrosite) }}">Pesanan</a>
         @endisset
 

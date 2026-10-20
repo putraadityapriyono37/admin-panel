@@ -9,7 +9,7 @@ use Illuminate\Support\Arr;
 
 class MicrositeController extends Controller
 {
-    private const SETTING_KEYS = ['color', 'open_hours', 'address', 'phone'];
+    private const SETTING_KEYS = ['color', 'open_hours', 'address', 'phone', 'description', 'social_media'];
 
     public function index()
     {
@@ -35,6 +35,8 @@ class MicrositeController extends Controller
             'open_hours' => ['nullable', 'string', 'max:100'],
             'address' => ['nullable', 'string', 'max:255'],
             'phone' => ['nullable', 'string', 'max:30'],
+            'description' => ['nullable', 'string', 'max:1000'],
+            'social_media' => ['nullable', 'string', 'max:100'],
         ]);
 
         Microsite::create([
@@ -63,6 +65,8 @@ class MicrositeController extends Controller
             'open_hours' => ['nullable', 'string', 'max:100'],
             'address' => ['nullable', 'string', 'max:255'],
             'phone' => ['nullable', 'string', 'max:30'],
+            'description' => ['nullable', 'string', 'max:1000'],
+            'social_media' => ['nullable', 'string', 'max:100'],
         ]);
 
         $otherSettings = Arr::except($microsite->settings ?? [], self::SETTING_KEYS);
@@ -76,6 +80,31 @@ class MicrositeController extends Controller
 
         return redirect()->route('admin.microsites.index')
             ->with('status', 'Microsite berhasil diperbarui.');
+    }
+
+    public function editInfo(Microsite $microsite)
+    {
+        return view('admin.microsites.info', ['currentMicrosite' => $microsite]);
+    }
+
+    public function updateInfo(Request $request, Microsite $microsite)
+    {
+        $data = $request->validate([
+            'open_hours' => ['nullable', 'string', 'max:100'],
+            'address' => ['nullable', 'string', 'max:255'],
+            'phone' => ['nullable', 'string', 'max:30'],
+            'description' => ['nullable', 'string', 'max:1000'],
+            'social_media' => ['nullable', 'string', 'max:100'],
+        ]);
+
+        // Warna tema tidak ikut diubah lewat halaman info restoran
+        $otherSettings = Arr::except($microsite->settings ?? [], array_keys($data));
+
+        $microsite->update([
+            'settings' => array_merge($otherSettings, $this->settingsFrom($data)),
+        ]);
+
+        return back()->with('status', 'Info restoran berhasil diperbarui.');
     }
 
     public function destroy(Microsite $microsite)
@@ -96,7 +125,7 @@ class MicrositeController extends Controller
     {
         return array_filter(
             Arr::only($data, self::SETTING_KEYS),
-            fn($value) => filled($value)
+            fn ($value) => filled($value)
         );
     }
 }

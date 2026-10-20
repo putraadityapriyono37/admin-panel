@@ -8,6 +8,7 @@
 This application is a Laravel application running on PHP 8.3. Always use the APIs that match the installed major version of each package — do not assume a version.
 
 Before relying on a package's API, confirm its installed version:
+
 - PHP packages: run `composer show --direct` to list direct dependencies with versions, or `composer show <vendor/package>` for a single package.
 - JS packages: check `package.json` for the installed versions.
 
@@ -78,7 +79,7 @@ This project has domain-specific skills available in `**/skills/**`. You MUST ac
 
 - Execute PHP in app context for debugging and testing code. Do not create models without user approval, prefer tests with factories instead. Prefer existing Artisan commands over custom tinker code.
 - Always use single quotes to prevent shell expansion: `php artisan tinker --execute 'Your::code();'`
-  - Double quotes for PHP strings inside: `php artisan tinker --execute 'User::where("active", true)->count();'`
+    - Double quotes for PHP strings inside: `php artisan tinker --execute 'User::where("active", true)->count();'`
 
 === php rules ===
 
@@ -146,3 +147,19 @@ This project has domain-specific skills available in `**/skills/**`. You MUST ac
 - Run `vendor/bin/phpunit` to call the test runner directly. It accepts the same file path and `--filter=testName` arguments.
 
 </laravel-boost-guidelines>
+
+## Konteks Proyek (PRD)
+
+Proyek ini bagian dari sistem microsite restoran: 3 repo (admin-panel,
+microsite-a, microsite-b) dengan 1 skema database yang sama.
+Detail lengkap ada di PRD-Microsite-Restoran.txt.
+
+Aturan khusus repo ini (admin-panel):
+
+- Repo ini memegang semua migration dan seeder, termasuk orders dan order_items.
+- Semua tabel konten punya kolom microsite_id; akses data dibatasi lewat
+  global scope dan policy.
+- Autentikasi admin dibuat sendiri (guard khusus admin, middleware role),
+  tanpa Breeze, Jetstream, atau Filament.
+- Role: super_admin (semua microsite) dan admin (hanya microsite miliknya).
+- Harga dan total pesanan selalu dihitung di server.
