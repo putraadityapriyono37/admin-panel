@@ -5,110 +5,74 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>@yield('title', 'Panel Admin')</title>
-    <style>
-        body {
-            font-family: sans-serif;
-            max-width: 900px;
-            margin: 0 auto;
-            padding: 16px;
-        }
-
-        nav {
-            display: flex;
-            gap: 16px;
-            align-items: center;
-            flex-wrap: wrap;
-            padding-bottom: 12px;
-            border-bottom: 1px solid #ccc;
-            margin-bottom: 16px;
-        }
-
-        nav form {
-            margin-left: auto;
-        }
-
-        table {
-            border-collapse: collapse;
-            width: 100%;
-        }
-
-        th,
-        td {
-            border: 1px solid #ccc;
-            padding: 6px 8px;
-            text-align: left;
-            vertical-align: middle;
-        }
-
-        .ok {
-            background: #e6f7e6;
-            padding: 8px;
-            margin-bottom: 12px;
-        }
-
-        .err {
-            background: #fde8e8;
-            padding: 8px;
-            margin-bottom: 12px;
-        }
-
-        .field {
-            margin-bottom: 10px;
-        }
-
-        .field label {
-            display: block;
-        }
-
-        .inline {
-            display: inline;
-        }
-    </style>
+    <link rel="stylesheet" href="{{ asset('css/admin.css') }}">
 </head>
 
-<body>
-    <nav>
-        <strong>Panel Admin</strong>
+<body @isset($currentMicrosite) style="--accent: {{ $currentMicrosite->settings['color'] ?? '#7a5230' }}" @endisset>
+    <a class="skip-link" href="#konten">Lompat ke konten</a>
 
-        @if (auth('admin')->user()->isSuperAdmin())
-            <a href="{{ route('admin.super.dashboard') }}">Dashboard</a>
-            <a href="{{ route('admin.microsites.index') }}">Microsite</a>
-            <a href="{{ route('admin.admins.index') }}">Akun Admin</a>
-        @endif
+    <div class="wrap">
+        <div class="topbar">
+            <span class="brand">Panel Admin</span>
+
+            @if (auth('admin')->user()->isSuperAdmin())
+                <nav aria-label="Navigasi super admin">
+                    <a class="nav-link" href="{{ route('admin.super.dashboard') }}"
+                        @if (request()->routeIs('admin.super.dashboard')) aria-current="page" @endif>Dashboard</a>
+                    <a class="nav-link" href="{{ route('admin.microsites.index') }}"
+                        @if (request()->routeIs('admin.microsites.*')) aria-current="page" @endif>Microsite</a>
+                    <a class="nav-link" href="{{ route('admin.admins.index') }}"
+                        @if (request()->routeIs('admin.admins.*')) aria-current="page" @endif>Akun Admin</a>
+                </nav>
+            @endif
+
+            @isset($currentMicrosite)
+                <span class="microsite-name">{{ $currentMicrosite->name }}</span>
+            @endisset
+
+            <form class="spacer" method="POST" action="{{ route('admin.logout') }}">
+                @csrf
+                <button class="btn btn-secondary btn-sm" type="submit">Keluar</button>
+            </form>
+        </div>
 
         @isset($currentMicrosite)
-            <span>|</span>
-            <strong>{{ $currentMicrosite->name }}</strong>
-            <a href="{{ route('admin.dashboard', $currentMicrosite) }}">Ringkasan</a>
-            <a href="{{ route('admin.info.edit', $currentMicrosite) }}">Info Restoran</a>
-            <a href="{{ route('admin.categories.index', $currentMicrosite) }}">Kategori</a>
-            <a href="{{ route('admin.menu-items.index', $currentMicrosite) }}">Menu</a>
-            <a href="{{ route('admin.galleries.index', $currentMicrosite) }}">Galeri</a>
-            <a href="{{ route('admin.promos.index', $currentMicrosite) }}">Promo</a>
-            <a href="{{ route('admin.orders.index', $currentMicrosite) }}">Pesanan</a>
+            <nav class="subnav" aria-label="Navigasi {{ $currentMicrosite->name }}">
+                <a class="nav-link" href="{{ route('admin.dashboard', $currentMicrosite) }}"
+                    @if (request()->routeIs('admin.dashboard')) aria-current="page" @endif>Ringkasan</a>
+                <a class="nav-link" href="{{ route('admin.info.edit', $currentMicrosite) }}"
+                    @if (request()->routeIs('admin.info.*')) aria-current="page" @endif>Info Restoran</a>
+                <a class="nav-link" href="{{ route('admin.categories.index', $currentMicrosite) }}"
+                    @if (request()->routeIs('admin.categories.*')) aria-current="page" @endif>Kategori</a>
+                <a class="nav-link" href="{{ route('admin.menu-items.index', $currentMicrosite) }}"
+                    @if (request()->routeIs('admin.menu-items.*')) aria-current="page" @endif>Menu</a>
+                <a class="nav-link" href="{{ route('admin.galleries.index', $currentMicrosite) }}"
+                    @if (request()->routeIs('admin.galleries.*')) aria-current="page" @endif>Galeri</a>
+                <a class="nav-link" href="{{ route('admin.promos.index', $currentMicrosite) }}"
+                    @if (request()->routeIs('admin.promos.*')) aria-current="page" @endif>Promo</a>
+                <a class="nav-link" href="{{ route('admin.orders.index', $currentMicrosite) }}"
+                    @if (request()->routeIs('admin.orders.*')) aria-current="page" @endif>Pesanan</a>
+            </nav>
         @endisset
 
-        <form method="POST" action="{{ route('admin.logout') }}">
-            @csrf
-            <button type="submit">Keluar</button>
-        </form>
-    </nav>
+        @if (session('status'))
+            <div class="alert alert-ok" role="status">{{ session('status') }}</div>
+        @endif
 
-    @if (session('status'))
-        <div class="ok">{{ session('status') }}</div>
-    @endif
+        @if ($errors->any())
+            <div class="alert alert-err" role="alert">
+                <ul>
+                    @foreach ($errors->all() as $error)
+                        <li>{{ $error }}</li>
+                    @endforeach
+                </ul>
+            </div>
+        @endif
 
-    @if ($errors->any())
-        <div class="err">
-            <ul>
-                @foreach ($errors->all() as $error)
-                    <li>{{ $error }}</li>
-                @endforeach
-            </ul>
-        </div>
-    @endif
-
-    @yield('content')
+        <main id="konten">
+            @yield('content')
+        </main>
+    </div>
 </body>
 
 </html>

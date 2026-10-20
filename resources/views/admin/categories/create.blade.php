@@ -4,8 +4,10 @@
 
 @section('content')
     <h1>Tambah Kategori</h1>
-    <form method="POST" action="{{ route('admin.categories.store', $currentMicrosite) }}">
-        @csrf
-        @include('admin.categories._form')
-    </form>
+    <div class="card">
+        <form method="POST" action="{{ route('admin.categories.store', $currentMicrosite) }}">
+            @csrf
+            @include('admin.categories._form')
+        </form>
+    </div>
 @endsection

@@ -1,10 +1,3 @@
-@if ($categories->isEmpty())
-    <p class="err">
-        Belum ada kategori. <a href="{{ route('admin.categories.create', $currentMicrosite) }}">Buat kategori</a>
-        terlebih dahulu.
-    </p>
-@endif
-
 <div class="field">
     <label>Nama menu
         <input type="text" name="name" value="{{ old('name', $item->name ?? '') }}" required>
@@ -40,18 +33,23 @@
     <label>Foto (jpg, png, webp; maksimal 2 MB)
         <input type="file" name="image" accept="image/*">
     </label>
-    @if (isset($item) && $item->image)
-        <p>Foto saat ini: <img src="{{ asset('storage/' . $item->image) }}" alt="{{ $item->name }}" width="80"></p>
-    @endif
+    @isset($item)
+        @if ($item->image)
+            <p class="hint">Foto saat ini:</p>
+            <img class="thumb thumb-lg" src="{{ asset('storage/' . $item->image) }}" alt="{{ $item->name }}">
+        @endif
+    @endisset
 </div>
 
 <div class="field">
     <input type="hidden" name="is_available" value="0">
-    <label>
+    <label class="check">
         <input type="checkbox" name="is_available" value="1" @checked(old('is_available', $item->is_available ?? true))>
         Tersedia
     </label>
 </div>
 
-<button type="submit">Simpan</button>
-<a href="{{ route('admin.menu-items.index', $currentMicrosite) }}">Batal</a>
+<div class="form-actions">
+    <button class="btn btn-primary" type="submit">Simpan</button>
+    <a class="btn btn-secondary" href="{{ route('admin.menu-items.index', $currentMicrosite) }}">Batal</a>
+</div>
