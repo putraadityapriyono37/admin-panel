@@ -29,6 +29,11 @@
     box-sizing: border-box;
 }
 
+/* Atribut hidden tidak berlaku bawaan untuk elemen SVG, jadi dipaksa di sini */
+[hidden] {
+    display: none;
+}
+
 body {
     margin: 0;
     background: var(--paper);
