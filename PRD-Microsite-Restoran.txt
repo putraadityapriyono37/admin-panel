@@ -1,0 +1,220 @@
+# PRD: Sistem Microsite Restoran dengan Panel Admin Terpusat
+
+Disusun oleh: Putra, Angga, Naufal · Status: Final · Tanggal: 20 Oktober 2026
+
+## 1. Ringkasan
+
+Proyek ini membangun dua microsite berbasis Laravel yang berdiri sendiri, ditambah satu panel admin Laravel yang mengelola data keduanya. Ketiga aplikasi berada di repository terpisah dan memakai satu skema database yang sama, dijalankan di database lokal masing-masing anggota. Microsite A (kafe) juga menerima pesanan dari pelanggan. Tujuan utamanya adalah pembelajaran konsep microsite: pembagian peran, pembatasan data per microsite, dan pemakaian satu database oleh beberapa aplikasi.
+
+## 2. Latar Belakang dan Tujuan
+
+Tugas ini diberikan sebagai bahan belajar tentang arsitektur microsite. Agar konsepnya mudah dilihat hasilnya, dipilih contoh kasus restoran: perubahan data di panel admin harus langsung terlihat di microsite yang tepat dan tidak memengaruhi microsite lain.
+
+Tujuan:
+
+- Memahami arsitektur 3 repository dengan 1 database bersama.
+- Menerapkan pembagian peran super admin dan admin biasa.
+- Menerapkan pembatasan data per microsite lewat kolom `microsite_id`.
+- Melatih kerja tim dengan alur Git yang rapi (branch, pull request, review).
+
+## 3. Ruang Lingkup
+
+Termasuk dalam proyek:
+
+- Panel admin dengan login buatan sendiri, peran, pengelolaan data, dan pengelolaan pesanan.
+- Microsite A (kafe) dengan fitur pemesanan oleh pelanggan, dan Microsite B (restoran keluarga) sebagai halaman publik.
+- Skema database yang dipegang panel admin, dijalankan di database lokal tiap anggota dengan nama dan skema yang sama.
+
+Di luar proyek (untuk tahap ini):
+
+- Pembayaran online (pelanggan membayar langsung di kafe).
+- Reservasi meja, dan pemesanan pada microsite B.
+- Akun atau login untuk pelanggan.
+- Notifikasi real-time dan pelacakan pesanan secara langsung.
+- Aplikasi mobile.
+- Deployment ke domain online (cukup berjalan di lokal).
+- Paket autentikasi dan panel siap pakai (Breeze, Jetstream, Filament).
+
+## 4. Pengguna dan Peran
+
+| Peran | Deskripsi | Hak akses |
+| --- | --- | --- |
+| Super admin | Pengelola platform | Mengelola semua microsite, akun admin, dan seluruh data lintas microsite |
+| Admin biasa | Pemilik atau staf satu restoran | Mengelola isi (menu, galeri, promo, info) dan memproses pesanan hanya untuk microsite yang ditugaskan padanya |
+| Pengunjung dan pelanggan | Publik | Melihat halaman microsite tanpa login; di microsite A dapat membuat pesanan tanpa login |
+
+## 5. Arsitektur Sistem
+
+Tiga repository dengan satu skema database (di tiap komputer anggota berjalan sebagai database lokal terpisah):
+
+```
+[Microsite A] --baca, simpan pesanan--> [ Database ] <--baca/tulis--> [Panel Admin]
+[Microsite B] --baca--> [ Database ]
+```
+
+Keputusan arsitektur:
+
+- Panel admin memegang semua migration dan seeder. Kedua microsite memiliki model yang menunjuk ke tabel yang sudah ada. Microsite B hanya membaca, sedangkan Microsite A membaca dan menulis hanya ke tabel `orders` dan `order_items`.
+- Setiap anggota memakai database lokalnya sendiri dengan nama dan skema yang sama. Angga dan Naufal meng-clone repo `admin-panel` (sebagai collaborator) lalu menjalankan migrate dan seed di komputer masing-masing.
+- Semua tabel konten memiliki kolom `microsite_id`. Tidak memakai prefix tabel per microsite karena microsite baru dapat ditambahkan kapan saja oleh super admin.
+- Tiap microsite mengetahui identitasnya lewat `MICROSITE_SLUG` di file `.env`, lalu semua query difilter dengan global scope.
+- Tabel `admins` dipisah dari data pengunjung dan pelanggan agar tidak tercampur.
+- Autentikasi panel admin dibuat sendiri dengan fitur bawaan Laravel (guard khusus admin, hashing password, middleware role, policy), tanpa Breeze, Jetstream, atau Filament.
+- Pesanan: harga, total, dan ketersediaan menu dihitung di server dari tabel `menu_items`, bukan dari data yang dikirim browser pelanggan. Nama dan harga menu disalin ke `order_items` saat pesanan dibuat.
+- Setiap aplikasi memakai `APP_KEY`, `SESSION_COOKIE`, dan `CACHE_PREFIX` yang berbeda untuk menghindari bentrok.
+
+## 6. Kebutuhan Fungsional
+
+Prioritas: Must (wajib), Should (sebaiknya ada), Could (jika waktu cukup).
+
+### 6.1 Panel Admin
+
+| ID | Kebutuhan | Prioritas |
+| --- | --- | --- |
+| FA-01 | Login dengan username dan password memakai autentikasi buatan sendiri (guard khusus admin) | Must |
+| FA-02 | Setelah login, super admin diarahkan ke dashboard semua microsite, admin biasa ke dashboard microsite miliknya | Must |
+| FA-03 | Super admin dapat menambah, mengubah, menonaktifkan, dan menghapus microsite | Must |
+| FA-04 | Super admin dapat membuat akun admin dan menentukan microsite yang dipegang | Must |
+| FA-05 | Admin biasa dapat mengelola kategori menu | Must |
+| FA-06 | Admin biasa dapat mengelola menu (tambah, ubah, hapus, harga, foto, status tersedia) | Must |
+| FA-07 | Data yang dilihat dan diubah admin biasa otomatis dibatasi ke microsite miliknya (global scope dan policy) | Must |
+| FA-08 | Admin biasa dapat mengelola galeri foto | Should |
+| FA-09 | Admin biasa dapat mengelola promo dengan tanggal mulai dan berakhir | Should |
+| FA-10 | Admin biasa dapat mengubah info restoran (jam buka, alamat, kontak, deskripsi) | Should |
+| FA-11 | Admin biasa dapat melihat daftar dan detail pesanan microsite miliknya, dengan filter status dan tanggal | Must |
+| FA-12 | Admin biasa dapat mengubah status pesanan (baru, diproses, siap, selesai, dibatalkan) | Must |
+
+### 6.2 Microsite A (Kafe)
+
+| ID | Kebutuhan | Prioritas |
+| --- | --- | --- |
+| MA-01 | Halaman beranda: banner, tentang singkat, menu unggulan, promo aktif | Must |
+| MA-02 | Halaman menu per kategori dengan harga, foto, dan status tersedia | Must |
+| MA-03 | Halaman galeri | Should |
+| MA-04 | Halaman promo yang sedang berjalan | Should |
+| MA-05 | Halaman kontak: alamat, jam buka, telepon, media sosial | Should |
+| MA-06 | Hanya menampilkan data dengan `microsite_id` milik A | Must |
+| MA-07 | Keranjang pesanan: pelanggan menambah menu yang tersedia, mengubah jumlah, dan menghapus item | Must |
+| MA-08 | Form pemesanan: nama (wajib), nomor meja atau nomor telepon (salah satu wajib), dan catatan; setelah dikirim pelanggan mendapat kode pesanan | Must |
+| MA-09 | Pesanan disimpan ke `orders` dan `order_items` dengan status awal "baru"; harga dan total dihitung di server | Must |
+| MA-10 | Halaman status pesanan: pelanggan mengecek status memakai kode pesanan | Should |
+
+### 6.3 Microsite B (Restoran Keluarga)
+
+Microsite B memiliki fitur yang sama dengan Microsite A pada MA-01 sampai MA-06 (dengan data milik B), tetapi tanpa fitur pemesanan. Perbedaannya pada identitas dan tema restoran keluarga: menu makanan berat dan paket keluarga, warna, logo, dan konten.
+
+Microsite B tidak memiliki fitur pemesanan maupun reservasi pada versi final.
+
+Catatan: tema kafe (A) dan restoran keluarga (B) sudah final.
+
+## 7. Kebutuhan Non-Fungsional
+
+- Keamanan: password di-hash, input divalidasi, akses data dibatasi lewat policy, bukan sekadar menyembunyikan menu.
+- Isolasi data: admin atau microsite tidak boleh dapat membaca atau mengubah data microsite lain.
+- Validasi pesanan: harga, total, dan ketersediaan menu dihitung di server, dan rute pemesanan dibatasi (throttle) untuk mencegah spam.
+- Konsistensi: semua perubahan skema melalui migration di repo panel admin.
+- Responsif: halaman microsite dapat dibuka dengan baik di HP.
+- Keterpeliharaan: tiap repo punya README, `.env.example`, dan versi PHP dan Laravel yang seragam.
+- File `.env` tidak boleh masuk ke repository.
+
+## 8. Rancangan Database (Awal)
+
+| Tabel | Kolom utama |
+| --- | --- |
+| microsites | id, name, slug, domain, is\_active, settings (json: warna, logo, jam buka, kontak) |
+| admins | id, name, username, password, role (super\_admin atau admin) |
+| admin\_microsite | admin\_id, microsite\_id |
+| categories | id, microsite\_id, name, sort\_order |
+| menu\_items | id, microsite\_id, category\_id, name, description, price, image, is\_available |
+| galleries | id, microsite\_id, image, caption |
+| promos | id, microsite\_id, title, description, start\_date, end\_date |
+| orders (dipakai microsite A) | id, microsite\_id, order\_code (unik), customer\_name, customer\_phone, table\_number, notes, status (baru, diproses, siap, selesai, dibatalkan), total\_price |
+| order\_items (dipakai microsite A) | id, order\_id, microsite\_id, menu\_item\_id, item\_name, unit\_price, quantity |
+
+## 9. Alur Utama
+
+### 9.1 Login dan pengalihan
+
+1. Pengguna mengisi username dan password di panel admin.
+2. Sistem memeriksa tabel `admins` dan membaca `role`.
+3. Jika `super_admin`, diarahkan ke dashboard semua microsite.
+4. Jika `admin`, sistem membaca `admin_microsite` lalu mengarahkan ke dashboard microsite miliknya, dengan semua data difilter `microsite_id`.
+
+### 9.2 Perubahan data tampil di microsite
+
+1. Admin A mengubah harga sebuah menu di panel admin.
+2. Data tersimpan di `menu_items` dengan `microsite_id` milik A.
+3. Microsite A membaca tabel itu dengan filter `microsite_id` A, sehingga harga baru langsung tampil.
+4. Microsite B tidak terpengaruhi.
+
+### 9.3 Pemesanan oleh pelanggan
+
+1. Pelanggan membuka halaman menu microsite A dan menambahkan menu ke keranjang.
+2. Pelanggan mengisi form pemesanan (nama, nomor meja atau telepon, catatan) lalu mengirim.
+3. Server memeriksa setiap menu (milik microsite A dan tersedia), menghitung harga dan total dari `menu_items`, lalu menyimpan ke `orders` dan `order_items` dengan status "baru".
+4. Pelanggan menerima kode pesanan dan dapat mengecek statusnya.
+5. Admin A melihat pesanan baru di panel admin dan mengubah statusnya (diproses, siap, selesai, atau dibatalkan). Pembayaran dilakukan langsung di kafe.
+
+## 10. Pembagian Tugas
+
+| Orang | Repo | Tanggung jawab |
+| --- | --- | --- |
+| Putra | admin-panel | Migration dan seeder semua tabel (termasuk orders dan order\_items), autentikasi buatan sendiri (login, guard admin, middleware role), kelola microsite dan akun admin, CRUD menu dan kategori dengan filter per microsite, kelola pesanan (daftar, detail, ubah status) |
+| Angga | microsite-a | Model dan global scope, halaman beranda, menu, galeri, promo, kontak, tema kafe, keranjang, form pemesanan, penyimpanan pesanan, halaman status pesanan |
+| Naufal | microsite-b | Hal yang sama seperti A (tanpa pemesanan) dengan tema restoran keluarga |
+
+Pembagian ini final dengan prinsip satu penanggung jawab per repo.
+
+Pengelolaan repository:
+
+- Putra membuat repo `admin-panel`, Angga `microsite-a`, dan Naufal `microsite-b`, masing-masing di akun GitHub sendiri.
+- Pemilik repo mengundang dua anggota lain sebagai collaborator dengan akses Write.
+- Perubahan masuk lewat branch fitur dan pull request yang di-review rekan, tidak langsung ke `main`.
+- File `.env` tidak di-commit; setiap repo menyertakan `.env.example` dan README.
+
+## 11. Tahapan Pengerjaan
+
+| Fase | Isi | Penanggung jawab |
+| --- | --- | --- |
+| 0. Kesepakatan | Menyepakati tabel (termasuk orders dan order\_items), nama slug, nama database lokal, dan versi PHP dan Laravel | Bersama |
+| 1. Fondasi panel admin | Migration, seeder (2 microsite dan data contoh), autentikasi buatan sendiri (login, guard admin, role) | Putra |
+| 2. Tampilan microsite | Layout dengan data dummy, lalu disambungkan ke database lokal setelah menjalankan migrate dan seed dari repo admin-panel | Angga, Naufal |
+| 3. Pemesanan | Keranjang, form pemesanan, dan penyimpanan pesanan di microsite A; daftar pesanan dan ubah status di panel admin | Angga, Putra |
+| 4. Fitur lanjutan | Galeri, promo, info restoran | Masing-masing |
+| 5. Pengujian dan dokumentasi | Uji alur dengan menjalankan ketiga repo di satu komputer dan satu database lokal, perbaikan, README | Bersama |
+
+## 12. Kriteria Penerimaan
+
+- Super admin dapat menambah microsite baru dan akun admin tanpa mengubah kode.
+- Admin biasa A tidak dapat melihat atau mengubah data microsite B, termasuk pesanan dan termasuk lewat penyesuaian URL.
+- Login memakai autentikasi buatan sendiri: admin biasa diarahkan ke dashboard microsite miliknya, super admin ke dashboard semua microsite.
+- Pelanggan dapat memesan beberapa menu di microsite A, mendapat kode pesanan, dan pesanan muncul di panel admin A saja.
+- Mengubah harga atau jumlah lewat request manual tidak memengaruhi harga yang tersimpan, dan menu yang tidak tersedia atau milik microsite lain ditolak.
+- Admin A dapat mengubah status pesanan, dan pelanggan melihat status terbaru lewat kode pesanan.
+- Pada pengujian di satu komputer (tiga repo, satu database lokal), perubahan harga menu di panel admin tampil di microsite yang benar dan tidak muncul di microsite lain.
+- Ketiga aplikasi dapat berjalan bersamaan tanpa saling menimpa session.
+- Angga dan Naufal dapat membangun database lokal dengan skema yang sama lewat migrate dan seed dari `admin-panel`.
+- Setiap repo memiliki README dan `.env.example`, serta tidak menyimpan `.env` asli.
+
+## 13. Risiko dan Mitigasi
+
+| Risiko | Mitigasi |
+| --- | --- |
+| Skema database berubah dan merusak microsite | Perubahan skema lewat pull request di repo admin-panel, di-review Angga dan Naufal, lalu semua menjalankan ulang migrate |
+| Database lokal tiap anggota tidak sinkron, sehingga data yang diinput di satu komputer tidak muncul di komputer lain | Semua memakai migration dan seeder yang sama dari admin-panel; pengujian alur dilakukan dengan menjalankan ketiga repo di satu komputer dengan satu database lokal |
+| Data bocor antar microsite | Global scope, policy, dan pengujian akses lintas microsite |
+| Celah keamanan pada autentikasi buatan sendiri | Memakai fitur bawaan Laravel (Auth, hashing, middleware, policy), validasi input, dan pengujian akses tiap peran |
+| Pelanggan memanipulasi harga atau jumlah lewat request | Harga dan total dihitung di server dari `menu_items`; jumlah divalidasi; menu harus milik microsite A dan tersedia |
+| Pesanan palsu atau spam karena pemesanan tanpa login | Throttle pada rute pemesanan dan validasi input |
+| Microsite A memiliki akses tulis ke database | Bila memakai user database terpisah, beri microsite A izin INSERT hanya pada `orders` dan `order_items`, dan SELECT pada tabel yang dibaca |
+| Session dan cookie saling menimpa saat berjalan di localhost | `SESSION_COOKIE` berbeda di tiap aplikasi atau pakai domain lokal |
+| Gambar upload dari admin tidak terbaca microsite | Simpan URL dasar admin di `.env` microsite atau pakai storage bersama |
+
+## 14. Keputusan Final
+
+- Tema: Microsite A kafe, Microsite B restoran keluarga.
+- Pemesanan: microsite A menerima pesanan dari pelanggan atas saran mentor, tanpa login pelanggan dan tanpa pembayaran online (bayar langsung di kafe).
+- Database: lokal di komputer masing-masing, dibangun dari migration dan seeder repo admin-panel.
+- Autentikasi panel admin: dibuat sendiri, tanpa Breeze atau Filament.
+- Reservasi: tidak dibuat.
+- Repository: tiap anggota membuat repo sendiri dan mengundan dua anggota lain sebagai collaborator.
