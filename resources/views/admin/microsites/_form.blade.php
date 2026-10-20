@@ -62,11 +62,13 @@
 
 <div class="field">
     <input type="hidden" name="is_active" value="0">
-    <label>
+    <label class="check">
         <input type="checkbox" name="is_active" value="1" @checked(old('is_active', $microsite->is_active ?? true))>
         Aktif
     </label>
 </div>
 
-<button type="submit">Simpan</button>
-<a href="{{ route('admin.microsites.index') }}">Batal</a>
+<div class="form-actions">
+    <button class="btn btn-primary" type="submit">Simpan</button>
+    <a class="btn btn-secondary" href="{{ route('admin.microsites.index') }}">Batal</a>
+</div>

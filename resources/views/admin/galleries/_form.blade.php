@@ -4,7 +4,8 @@
     </label>
     @isset($gallery)
         @if ($gallery->image)
-            <p>Foto saat ini: <img src="{{ asset('storage/' . $gallery->image) }}" alt="{{ $gallery->caption }}" width="120"></p>
+            <p class="hint">Foto saat ini:</p>
+            <img class="thumb thumb-lg" src="{{ asset('storage/' . $gallery->image) }}" alt="{{ $gallery->caption }}">
         @endif
     @endisset
 </div>
@@ -15,5 +16,7 @@
     </label>
 </div>
 
-<button type="submit">Simpan</button>
-<a href="{{ route('admin.galleries.index', $currentMicrosite) }}">Batal</a>
+<div class="form-actions">
+    <button class="btn btn-primary" type="submit">Simpan</button>
+    <a class="btn btn-secondary" href="{{ route('admin.galleries.index', $currentMicrosite) }}">Batal</a>
+</div>

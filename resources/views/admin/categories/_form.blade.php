@@ -10,5 +10,7 @@
     </label>
 </div>
 
-<button type="submit">Simpan</button>
-<a href="{{ route('admin.categories.index', $currentMicrosite) }}">Batal</a>
+<div class="form-actions">
+    <button class="btn btn-primary" type="submit">Simpan</button>
+    <a class="btn btn-secondary" href="{{ route('admin.categories.index', $currentMicrosite) }}">Batal</a>
+</div>

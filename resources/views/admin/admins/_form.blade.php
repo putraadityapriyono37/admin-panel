@@ -41,12 +41,14 @@
 <div class="field">
     <strong>Microsite yang dipegang</strong> (wajib untuk admin biasa, diabaikan untuk super admin)
     @foreach ($microsites as $microsite)
-        <label>
+        <label class="check">
             <input type="checkbox" name="microsite_ids[]" value="{{ $microsite->id }}" @checked(in_array($microsite->id, $selected))>
             {{ $microsite->name }}
         </label>
     @endforeach
 </div>
 
-<button type="submit">Simpan</button>
-<a href="{{ route('admin.admins.index') }}">Batal</a>
+<div class="form-actions">
+    <button class="btn btn-primary" type="submit">Simpan</button>
+    <a class="btn btn-secondary" href="{{ route('admin.admins.index') }}">Batal</a>
+</div>
