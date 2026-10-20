@@ -1,23 +1,27 @@
-<!DOCTYPE html>
-<html lang="id">
+@extends('admin.layout')
 
-<head>
-    <meta charset="utf-8">
-    <title>Dashboard Super Admin</title>
-</head>
+@section('title', 'Dashboard Super Admin')
 
-<body>
+@section('content')
     <h1>Dashboard Super Admin</h1>
     <p>Halo, {{ auth('admin')->user()->name }}</p>
-    <ul>
-        @foreach ($microsites as $microsite)
-            <li><a href="{{ route('admin.dashboard', $microsite) }}">{{ $microsite->name }}</a></li>
-        @endforeach
-    </ul>
-    <form method="POST" action="{{ route('admin.logout') }}">
-        @csrf
-        <button type="submit">Keluar</button>
-    </form>
-</body>
 
-</html>
+    <table>
+        <thead>
+            <tr>
+                <th>Microsite</th>
+                <th>Status</th>
+                <th>Lihat dashboard</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach ($microsites as $microsite)
+                <tr>
+                    <td>{{ $microsite->name }}</td>
+                    <td>{{ $microsite->is_active ? 'Aktif' : 'Nonaktif' }}</td>
+                    <td><a href="{{ route('admin.dashboard', $microsite) }}">Buka</a></td>
+                </tr>
+            @endforeach
+        </tbody>
+    </table>
+@endsection
