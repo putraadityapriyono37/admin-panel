@@ -82,6 +82,7 @@
             <a href="{{ route('admin.dashboard', $currentMicrosite) }}">Ringkasan</a>
             <a href="{{ route('admin.categories.index', $currentMicrosite) }}">Kategori</a>
             <a href="{{ route('admin.menu-items.index', $currentMicrosite) }}">Menu</a>
+            <a href="{{ route('admin.orders.index', $currentMicrosite) }}">Pesanan</a>
         @endisset
 
         <form method="POST" action="{{ route('admin.logout') }}">
