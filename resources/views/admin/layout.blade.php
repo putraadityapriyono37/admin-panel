@@ -54,7 +54,7 @@
         Lompat ke konten
     </a>
 
-    <div class="min-h-screen xl:flex">
+    <div class="min-h-screen xl:flex" x-data>
         <!-- Backdrop sidebar mobile -->
         <div x-data x-show="$store.sidebar.isMobileOpen" x-transition.opacity
             @click="$store.sidebar.close()" class="fixed inset-0 z-9999 bg-black/40 xl:hidden"></div>
@@ -71,7 +71,7 @@
                 @endisset
             </div>
 
-            <nav class="flex flex-col gap-4">
+            <nav class="flex flex-col gap-4" @click="$store.sidebar.close()">
                 @if (auth('admin')->user()->isSuperAdmin())
                     <div>
                         <h2 class="mb-3 px-3 text-theme-xs font-medium uppercase tracking-wide text-gray-400">
