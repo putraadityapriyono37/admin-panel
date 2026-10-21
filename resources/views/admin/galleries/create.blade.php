@@ -3,9 +3,9 @@
 @section('title', 'Tambah Foto')
 
 @section('content')
-    <h1>Tambah Foto</h1>
-    <div class="card">
-        <form method="POST" action="{{ route('admin.galleries.store', $currentMicrosite) }}" enctype="multipart/form-data">
+    <div class="card p-6">
+        <form method="POST" action="{{ route('admin.galleries.store', $currentMicrosite) }}"
+            enctype="multipart/form-data">
             @csrf
             @include('admin.galleries._form')
         </form>

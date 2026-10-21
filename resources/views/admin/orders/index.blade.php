@@ -3,13 +3,12 @@
 @section('title', 'Daftar Pesanan - ' . $currentMicrosite->name)
 
 @section('content')
-    <h1>Daftar Pesanan</h1>
-
-    <div class="filter-bar">
-        <form method="GET" action="{{ route('admin.orders.index', $currentMicrosite) }}" class="filter-form">
-            <div class="field">
-                <label for="status">Status:</label>
-                <select name="status" id="status">
+    <div class="card mb-6 p-4">
+        <form method="GET" action="{{ route('admin.orders.index', $currentMicrosite) }}"
+            class="flex flex-wrap items-end gap-3">
+            <div>
+                <label class="form-label" for="status">Status</label>
+                <select class="input-field w-56" name="status" id="status">
                     <option value="">-- Semua Status --</option>
                     @foreach ($statuses as $st)
                         <option value="{{ $st }}" @selected($filterStatus === $st)>{{ ucfirst($st) }}</option>
@@ -17,40 +16,42 @@
                 </select>
             </div>
 
-            <div class="field">
-                <label for="date">Tanggal:</label>
-                <input type="date" name="date" id="date" value="{{ $filterDate }}">
+            <div>
+                <label class="form-label" for="date">Tanggal</label>
+                <input class="input-field w-56" type="date" name="date" id="date" value="{{ $filterDate }}">
             </div>
 
-            <div class="form-actions tight">
-                <button class="btn btn-secondary" type="submit">Filter</button>
+            <div class="flex items-center gap-3">
+                <button class="btn btn-primary px-5 py-3.5 text-sm" type="submit">Filter</button>
                 @if ($filterStatus || $filterDate)
-                    <a href="{{ route('admin.orders.index', $currentMicrosite) }}">Reset</a>
+                    <a class="text-sm font-medium text-brand-500 hover:text-brand-600 dark:text-brand-400"
+                        href="{{ route('admin.orders.index', $currentMicrosite) }}">Reset</a>
                 @endif
             </div>
         </form>
     </div>
 
-    <div class="table-scroll">
-        <table>
-            <thead>
+    <div class="table-wrap">
+        <table class="w-full">
+            <thead class="border-b border-gray-200 dark:border-gray-800">
                 <tr>
-                    <th>Waktu</th>
-                    <th>Kode</th>
-                    <th>Pelanggan</th>
-                    <th>Meja / Telp</th>
-                    <th class="num">Total</th>
-                    <th>Status</th>
-                    <th>Aksi</th>
+                    <th class="table-head">Waktu</th>
+                    <th class="table-head">Kode</th>
+                    <th class="table-head">Pelanggan</th>
+                    <th class="table-head">Meja / Telp</th>
+                    <th class="table-head">Total</th>
+                    <th class="table-head">Status</th>
+                    <th class="table-head">Aksi</th>
                 </tr>
             </thead>
-            <tbody>
+            <tbody class="divide-y divide-gray-200 dark:divide-gray-800">
                 @forelse ($orders as $order)
                     <tr>
-                        <td>{{ $order->created_at->format('d/m/Y H:i') }}</td>
-                        <td><strong>{{ $order->order_code }}</strong></td>
-                        <td>{{ $order->customer_name }}</td>
-                        <td>
+                        <td class="table-cell">{{ $order->created_at->format('d/m/Y H:i') }}</td>
+                        <td class="table-cell font-medium text-gray-800 dark:text-white/90">{{ $order->order_code }}
+                        </td>
+                        <td class="table-cell">{{ $order->customer_name }}</td>
+                        <td class="table-cell">
                             @if ($order->table_number)
                                 Meja {{ $order->table_number }}
                             @elseif ($order->customer_phone)
@@ -59,23 +60,26 @@
                                 -
                             @endif
                         </td>
-                        <td class="num">Rp {{ number_format($order->total_price, 0, ',', '.') }}</td>
-                        <td>
-                            @php($statusClass = ['baru' => 'badge-info', 'diproses' => 'badge-warn', 'siap' => 'badge-teal', 'selesai' => 'badge-ok', 'dibatalkan' => 'badge-danger'][$order->status] ?? 'badge-off')
+                        <td class="table-cell">Rp {{ number_format($order->total_price, 0, ',', '.') }}</td>
+                        <td class="table-cell">
+                            @php($statusClass = ['baru' => 'badge-info', 'diproses' => 'badge-warning', 'siap' => 'badge-success', 'selesai' => 'badge-neutral', 'dibatalkan' => 'badge-error'][$order->status] ?? 'badge-neutral')
                             <span class="badge {{ $statusClass }}">{{ ucfirst($order->status) }}</span>
                         </td>
-                        <td>
-                            <a class="btn btn-secondary btn-sm" href="{{ route('admin.orders.show', [$currentMicrosite, $order]) }}">Detail</a>
+                        <td class="table-cell">
+                            <a class="btn btn-outline px-4 py-3 text-sm"
+                                href="{{ route('admin.orders.show', [$currentMicrosite, $order]) }}">Detail</a>
                         </td>
                     </tr>
                 @empty
                     <tr>
-                        <td colspan="7" class="empty">Belum ada pesanan yang sesuai filter.</td>
+                        <td colspan="7" class="empty-cell">Belum ada pesanan yang sesuai filter.</td>
                     </tr>
                 @endforelse
             </tbody>
         </table>
     </div>
 
-    {{ $orders->links() }}
+    <div class="mt-6">
+        {{ $orders->links() }}
+    </div>
 @endsection

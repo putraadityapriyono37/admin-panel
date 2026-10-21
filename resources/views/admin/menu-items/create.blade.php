@@ -3,9 +3,9 @@
 @section('title', 'Tambah Menu')
 
 @section('content')
-    <h1>Tambah Menu</h1>
-    <div class="card">
-        <form method="POST" action="{{ route('admin.menu-items.store', $currentMicrosite) }}" enctype="multipart/form-data">
+    <div class="card p-6">
+        <form method="POST" action="{{ route('admin.menu-items.store', $currentMicrosite) }}"
+            enctype="multipart/form-data">
             @csrf
             @include('admin.menu-items._form')
         </form>

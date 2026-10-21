@@ -3,8 +3,7 @@
 @section('title', 'Ubah Microsite')
 
 @section('content')
-    <h1>Ubah Microsite</h1>
-    <div class="card">
+    <div class="card p-6">
         <form method="POST" action="{{ route('admin.microsites.update', $microsite) }}">
             @csrf
             @method('PUT')
