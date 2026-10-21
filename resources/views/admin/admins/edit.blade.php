@@ -3,8 +3,7 @@
 @section('title', 'Ubah Akun Admin')
 
 @section('content')
-    <h1>Ubah Akun Admin</h1>
-    <div class="card">
+    <div class="card p-6">
         <form method="POST" action="{{ route('admin.admins.update', $admin) }}">
             @csrf
             @method('PUT')

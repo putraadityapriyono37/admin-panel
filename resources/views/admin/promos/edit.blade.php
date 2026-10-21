@@ -3,8 +3,7 @@
 @section('title', 'Ubah Promo')
 
 @section('content')
-    <h1>Ubah Promo</h1>
-    <div class="card">
+    <div class="card p-6">
         <form method="POST" action="{{ route('admin.promos.update', [$currentMicrosite, $promo]) }}">
             @csrf
             @method('PUT')

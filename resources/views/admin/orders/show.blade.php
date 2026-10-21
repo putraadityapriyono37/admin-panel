@@ -3,79 +3,98 @@
 @section('title', 'Detail Pesanan ' . $order->order_code . ' - ' . $currentMicrosite->name)
 
 @section('content')
-    <p>
-        <a href="{{ route('admin.orders.index', $currentMicrosite) }}">&larr; Kembali ke Daftar Pesanan</a>
+    <p class="mb-4">
+        <a class="text-sm font-medium text-brand-500 hover:text-brand-600 dark:text-brand-400"
+            href="{{ route('admin.orders.index', $currentMicrosite) }}">&larr; Kembali ke Daftar Pesanan</a>
     </p>
 
-    <h1>Pesanan #{{ $order->order_code }}</h1>
-
-    <div class="grid-2">
-        <div class="card">
-            <h3>Informasi Pemesan</h3>
-            <p><strong>Nama:</strong> {{ $order->customer_name }}</p>
-            <p><strong>Nomor Meja:</strong> {{ $order->table_number ?? '-' }}</p>
-            <p><strong>Nomor Telepon:</strong> {{ $order->customer_phone ?? '-' }}</p>
-            <p><strong>Waktu Pesan:</strong> {{ $order->created_at->format('d/m/Y H:i:s') }}</p>
-            <p><strong>Catatan:</strong> {{ $order->notes ?: '-' }}</p>
+    <div class="mb-6 grid grid-cols-1 gap-6 lg:grid-cols-2">
+        <div class="card p-6">
+            <h2 class="text-base font-medium text-gray-800 dark:text-white/90">Informasi Pemesan</h2>
+            <dl class="mt-4 space-y-2 text-sm">
+                <div class="flex gap-2">
+                    <dt class="w-36 font-medium text-gray-500 dark:text-gray-400">Nama</dt>
+                    <dd class="text-gray-800 dark:text-white/90">{{ $order->customer_name }}</dd>
+                </div>
+                <div class="flex gap-2">
+                    <dt class="w-36 font-medium text-gray-500 dark:text-gray-400">Nomor Meja</dt>
+                    <dd class="text-gray-800 dark:text-white/90">{{ $order->table_number ?? '-' }}</dd>
+                </div>
+                <div class="flex gap-2">
+                    <dt class="w-36 font-medium text-gray-500 dark:text-gray-400">Nomor Telepon</dt>
+                    <dd class="text-gray-800 dark:text-white/90">{{ $order->customer_phone ?? '-' }}</dd>
+                </div>
+                <div class="flex gap-2">
+                    <dt class="w-36 font-medium text-gray-500 dark:text-gray-400">Waktu Pesan</dt>
+                    <dd class="text-gray-800 dark:text-white/90">{{ $order->created_at->format('d/m/Y H:i:s') }}</dd>
+                </div>
+                <div class="flex gap-2">
+                    <dt class="w-36 font-medium text-gray-500 dark:text-gray-400">Catatan</dt>
+                    <dd class="text-gray-800 dark:text-white/90">{{ $order->notes ?: '-' }}</dd>
+                </div>
+            </dl>
         </div>
 
-        <div class="card">
-            <h3>Status Pesanan</h3>
-            <p>
+        <div class="card p-6">
+            <h2 class="text-base font-medium text-gray-800 dark:text-white/90">Status Pesanan</h2>
+            <p class="mt-4 text-sm text-gray-500 dark:text-gray-400">
                 Status saat ini:
-                @php($statusClass = ['baru' => 'badge-info', 'diproses' => 'badge-warn', 'siap' => 'badge-teal', 'selesai' => 'badge-ok', 'dibatalkan' => 'badge-danger'][$order->status] ?? 'badge-off')
+                @php($statusClass = ['baru' => 'badge-info', 'diproses' => 'badge-warning', 'siap' => 'badge-success', 'selesai' => 'badge-neutral', 'dibatalkan' => 'badge-error'][$order->status] ?? 'badge-neutral')
                 <span class="badge {{ $statusClass }}">{{ ucfirst($order->status) }}</span>
             </p>
 
             <form method="POST" action="{{ route('admin.orders.status', [$currentMicrosite, $order]) }}">
                 @csrf
                 @method('PATCH')
-                <div class="field">
-                    <label for="status">Ubah Status:</label>
-                    <select name="status" id="status" required>
+                <div class="mt-4">
+                    <label class="form-label" for="status">Ubah Status</label>
+                    <select class="input-field" name="status" id="status" required>
                         @foreach ($statuses as $st)
                             <option value="{{ $st }}" @selected($order->status === $st)>{{ ucfirst($st) }}</option>
                         @endforeach
                     </select>
                 </div>
-                <div class="form-actions">
-                    <button class="btn btn-primary" type="submit">Simpan Status</button>
+                <div class="mt-4">
+                    <button class="btn btn-primary px-5 py-3.5 text-sm" type="submit">Simpan Status</button>
                 </div>
             </form>
         </div>
     </div>
 
-    <h3>Rincian Menu</h3>
-    <div class="table-scroll">
-        <table>
-            <thead>
+    <h2 class="text-base font-medium text-gray-800 dark:text-white/90">Rincian Menu</h2>
+    <div class="table-wrap mt-4">
+        <table class="w-full">
+            <thead class="border-b border-gray-200 dark:border-gray-800">
                 <tr>
-                    <th>No</th>
-                    <th>Menu</th>
-                    <th class="num">Harga Satuan</th>
-                    <th class="num">Jumlah</th>
-                    <th class="num">Subtotal</th>
+                    <th class="table-head">No</th>
+                    <th class="table-head">Menu</th>
+                    <th class="table-head">Harga Satuan</th>
+                    <th class="table-head">Jumlah</th>
+                    <th class="table-head">Subtotal</th>
                 </tr>
             </thead>
-            <tbody>
+            <tbody class="divide-y divide-gray-200 dark:divide-gray-800">
                 @forelse ($order->items as $index => $item)
                     <tr>
-                        <td>{{ $index + 1 }}</td>
-                        <td>{{ $item->item_name }}</td>
-                        <td class="num">Rp {{ number_format($item->unit_price, 0, ',', '.') }}</td>
-                        <td class="num">{{ $item->quantity }}</td>
-                        <td class="num">Rp {{ number_format($item->unit_price * $item->quantity, 0, ',', '.') }}</td>
+                        <td class="table-cell">{{ $index + 1 }}</td>
+                        <td class="table-cell">{{ $item->item_name }}</td>
+                        <td class="table-cell">Rp {{ number_format($item->unit_price, 0, ',', '.') }}</td>
+                        <td class="table-cell">{{ $item->quantity }}</td>
+                        <td class="table-cell">Rp {{ number_format($item->unit_price * $item->quantity, 0, ',', '.') }}
+                        </td>
                     </tr>
                 @empty
                     <tr>
-                        <td colspan="5" class="empty">Tidak ada item menu dalam pesanan ini.</td>
+                        <td colspan="5" class="empty-cell">Tidak ada item menu dalam pesanan ini.</td>
                     </tr>
                 @endforelse
             </tbody>
-            <tfoot>
+            <tfoot class="border-t border-gray-200 dark:border-gray-800">
                 <tr>
-                    <td colspan="4" class="tfoot-label">Total Pembayaran:</td>
-                    <td class="num">Rp {{ number_format($order->total_price, 0, ',', '.') }}</td>
+                    <td class="table-cell text-end font-medium text-gray-800 dark:text-white/90" colspan="4">
+                        Total Pembayaran:</td>
+                    <td class="table-cell font-medium text-gray-800 dark:text-white/90">
+                        Rp {{ number_format($order->total_price, 0, ',', '.') }}</td>
                 </tr>
             </tfoot>
         </table>

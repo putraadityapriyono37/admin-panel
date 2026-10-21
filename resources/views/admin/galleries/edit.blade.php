@@ -3,8 +3,7 @@
 @section('title', 'Ubah Foto')
 
 @section('content')
-    <h1>Ubah Foto</h1>
-    <div class="card">
+    <div class="card p-6">
         <form method="POST" action="{{ route('admin.galleries.update', [$currentMicrosite, $gallery]) }}"
             enctype="multipart/form-data">
             @csrf

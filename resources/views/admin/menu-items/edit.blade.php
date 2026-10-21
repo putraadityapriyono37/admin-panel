@@ -3,8 +3,7 @@
 @section('title', 'Ubah Menu')
 
 @section('content')
-    <h1>Ubah Menu</h1>
-    <div class="card">
+    <div class="card p-6">
         <form method="POST" action="{{ route('admin.menu-items.update', [$currentMicrosite, $item]) }}"
             enctype="multipart/form-data">
             @csrf

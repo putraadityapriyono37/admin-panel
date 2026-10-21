@@ -3,8 +3,7 @@
 @section('title', 'Tambah Kategori')
 
 @section('content')
-    <h1>Tambah Kategori</h1>
-    <div class="card">
+    <div class="card p-6">
         <form method="POST" action="{{ route('admin.categories.store', $currentMicrosite) }}">
             @csrf
             @include('admin.categories._form')
